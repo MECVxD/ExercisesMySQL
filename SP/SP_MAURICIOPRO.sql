@@ -10,30 +10,29 @@ CREATE PROCEDURE `SP_MAURICIOPRO`(
 		
 */
 	
-	Par_DiasSum					INT(5),	
-	Par_DiasHabiles				INT(5),	
-	Par_Fecha					DATE,	
-	OUT Mensaje					VARCHAR(200),
-	OUT Resultado				VARCHAR(200)
+	Par_DiasSum											INT(11),	
+	Par_SabadoHabil									CHAR(1),	
+	Par_Fecha												DATE,	
+	OUT Mensaje											VARCHAR(200),
+	OUT Resultado										VARCHAR(200)
 	
 )
 TerminaStore: BEGIN
 	-- Declaracion de Variables
 	
-	DECLARE Fecha_Vacia			DATE;
-	DECLARE Entero_Cero			INT(5);
-	DECLARE Var_DHabil			INT;
-	DECLARE Var_FechaFin		DATE;
-	DECLARE Dias 				INT(5);
-	DECLARE Resultado_Pr		DATE;
+	DECLARE Fecha_Vacia							DATE;
+	DECLARE Entero_Cero							INT(5);
+	DECLARE Var_DiasTrancurridos		INT(11);
+	DECLARE Var_Resultado_Pr				DATE;
 
-	SET Entero_Cero				:=0;							
-	SET	Fecha_Vacia	 		 	:='1900-01-01';
-	SET Dias        			:=0;
+	SET Entero_Cero									:= 0;							
+	SET	Fecha_Vacia	 		 						:= '1900-01-01';
+	SET Dias        								:= 0;
+	SET Var_Resultado_Pr 						:= Par_Fecha;
 	
 	ManejoErrores: BEGIN 
 		
-		IF(IFNULL(Par_fecha	, Fecha_Vacia) = Fecha_Vacia) THEN
+		IF(IFNULL(Par_Fecha	, Fecha_Vacia) = Fecha_Vacia) THEN
 			SET Mensaje:= 'La fecha esta vacia.';
 			LEAVE ManejoErrores;
 		END IF;
@@ -43,45 +42,14 @@ TerminaStore: BEGIN
 			LEAVE ManejoErrores;
 		END IF;
 	  
-		SET Var_FechaFin:=DATE_ADD(Par_Fecha, INTERVAL Par_DiasSum DAY);
+		WHILE Var_DiasTrancurridos < Par_DiasSum DO
+			SET Var_Resultado_Pr:=DATE_ADD(Var_Resultado_Pr, INTERVAL 1 DAY);
 
-		IF Par_DiasHabiles+1=6 THEN	
-  			WHILE Par_Fecha<=Var_FechaFin DO
-      	  		IF DAYOFWEEK(Par_Fecha) = 1 THEN
-      	     		SET Dias=Dias+1;
-      	     	ELSEIF DAYOFWEEK(Par_Fecha) = 7 THEN
-      	     		SET Dias=Dias+1;
-      	  		END IF;
-
-        		SET Par_Fecha=Par_Fecha+INTERVAL 1 day;
-    		END WHILE;
-    	
-    		IF DAYOFWEEK(Var_FechaFin)=7 THEN
-    			SET Resultado_Pr:=DATE_ADD(Var_FechaFin, INTERVAL Dias+1 DAY);-- Resultado_Pr
-    		ELSE
-    			SET Resultado_Pr:=DATE_ADD(Var_FechaFin, INTERVAL Dias DAY);
-    		END IF;
-    	
-    		IF DAYOFWEEK(Resultado_Pr)=1 THEN
-    			SET Resultado:=DATE_ADD(Resultado_Pr, INTERVAL 2 DAY);
-    		ELSEIF DAYOFWEEK(Resultado_Pr)=7 THEN
-    			SET Resultado:=DATE_ADD(Resultado_Pr, INTERVAL 2 DAY);
-    		ELSE
-    			SET Resultado:=Resultado_Pr;
-    		END IF;
-    	
-    	/*ELSEIF Par_DiasHabiles+1=7 THEN	
-  			WHILE Par_Fecha<=Var_FechaFin DO
-      	  		IF DAYOFWEEK(Par_Fecha) = 1 THEN
-      	     		SET Dias=Dias+1;
-      	  		END IF;
-				SET Par_Fecha=Par_Fecha+INTERVAL 1 day;
-    		END WHILE;
-    		IF DAYOFWEEK(Var_FechaFin)=7 THEN
-    			SET Resultado_Pr:=DATE_ADD(Var_FechaFin, INTERVAL Dias+1	DAY);
-    		ELSE
-    			SET Resultado_Pr:=DATE_ADD(Var_FechaFin, INTERVAL Dias	DAY);
-    		END IF;*/
-		END IF;
+			IF DAYOFWEEK(Var_Resultado_Pr) IN (2,3,4,5,6) OR (DAYOFWEEK(Var_Resultado_Pr)=7 AND Par_SabadoHabil='S') THEN
+				SET Var_DiasTrancurridos:=Var_DiasTrancurridos+1;
+			END IF;
+ 		END WHILE;
+ 	
+		SET Resultado:= Var_Resultado_Pr;
 	END ManejoErrores;	
 END TerminaStore$$;
