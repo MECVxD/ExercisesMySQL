@@ -10,29 +10,29 @@ CREATE PROCEDURE `SP_MAURICIOPRO`(
 		
 */
 	
-	Par_DiasSum											INT(11),	
-	Par_SabadoHabil									CHAR(1),	
-	Par_Fecha												DATE,	
-	OUT Mensaje											VARCHAR(200),
-	OUT Resultado										VARCHAR(200)
+	Par_DiasSum				INT(11),	
+	Par_SabadoHabil				CHAR(1),	
+	Par_Fecha				DATE,	
+	OUT Mensaje				VARCHAR(200),
+	OUT Resultado				VARCHAR(200)
 	
 )
 TerminaStore: BEGIN
 	-- Declaracion de Variables
 	
-	DECLARE Fecha_Vacia							DATE;
-	DECLARE Entero_Cero							INT(5);
+	DECLARE Fecha_Vacia			DATE;
+	DECLARE Entero_Cero			INT(5);
 	DECLARE Var_DiasTrancurridos		INT(11);
-	DECLARE Var_Resultado_Pr				DATE;
+	DECLARE Var_Resultado_Pr		DATE;
 
-	SET Entero_Cero									:= 0;							
-	SET	Fecha_Vacia	 		 						:= '1900-01-01';
-	SET Dias        								:= 0;
-	SET Var_Resultado_Pr 						:= Par_Fecha;
+	SET Entero_Cero				:= 0;							
+	SET	Fecha_Vacia	 		:= '1900-01-01';
+	SET Dias        			:= 0;
+	SET Var_Resultado_Pr 			:= Par_Fecha;
 	
 	ManejoErrores: BEGIN 
 		
-		IF(IFNULL(Par_Fecha	, Fecha_Vacia) = Fecha_Vacia) THEN
+		IF(IFNULL(Par_Fecha, Fecha_Vacia) = Fecha_Vacia) THEN
 			SET Mensaje:= 'La fecha esta vacia.';
 			LEAVE ManejoErrores;
 		END IF;
